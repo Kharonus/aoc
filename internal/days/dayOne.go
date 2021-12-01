@@ -1,14 +1,16 @@
-package internal
+package days
 
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/Kharonus/aoc/internal"
 )
 
 type DayOne struct{}
 
 func (day *DayOne) SolveStarOne(input []string) string {
-	values, err := stringSliceToIntSlice(input)
+	values, err := internal.StringSliceToIntSlice(input)
 	if err != nil {
 		panic(fmt.Sprintf("input is no list of integer values"))
 	}
@@ -18,7 +20,7 @@ func (day *DayOne) SolveStarOne(input []string) string {
 }
 
 func (day *DayOne) SolveStarTwo(input []string) string {
-	values, err := stringSliceToIntSlice(input)
+	values, err := internal.StringSliceToIntSlice(input)
 	if err != nil {
 		panic(fmt.Sprintf("input is no list of integer values"))
 	}
