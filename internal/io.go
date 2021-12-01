@@ -5,10 +5,10 @@ import (
 	"os"
 )
 
-func ReadFileLineByLine(path string) ([]string, error) {
+func ReadFileLineByLine(path string) []string {
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	scanner := bufio.NewScanner(file)
@@ -20,5 +20,10 @@ func ReadFileLineByLine(path string) ([]string, error) {
 		result = append(result, scanner.Text())
 	}
 
-	return result, file.Close()
+	err = file.Close()
+	if err != nil {
+		panic(err)
+	}
+
+	return result
 }

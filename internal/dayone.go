@@ -1,43 +1,33 @@
 package internal
 
 import (
-	"errors"
+	"fmt"
 	"strconv"
 )
 
 type DayOne struct{}
 
-func (day *DayOne) SolveStarOne(input []string) (string, error) {
+func (day *DayOne) SolveStarOne(input []string) string {
 	values, err := stringSliceToIntSlice(input)
 	if err != nil {
-		return "", err
+		panic(fmt.Sprintf("input is no list of integer values"))
 	}
 
-	increasedCounter, err := day.aggregateIncreasedValues(values)
-	if err != nil {
-		return "", err
-	}
-
-	return strconv.Itoa(increasedCounter), nil
+	increasedCounter := day.aggregateIncreasedValues(values)
+	return strconv.Itoa(increasedCounter)
 }
 
-func (day *DayOne) SolveStarTwo(input []string) (string, error) {
+func (day *DayOne) SolveStarTwo(input []string) string {
 	values, err := stringSliceToIntSlice(input)
 	if err != nil {
-		return "", err
+		panic(fmt.Sprintf("input is no list of integer values"))
 	}
 
-	values, err = day.combineSlidingWindow(values)
-
-	increasedCounter, err := day.aggregateIncreasedValues(values)
-	if err != nil {
-		return "", err
-	}
-
-	return strconv.Itoa(increasedCounter), nil
+	values = day.combineSlidingWindow(values)
+	return strconv.Itoa(day.aggregateIncreasedValues(values))
 }
 
-func (day DayOne) aggregateIncreasedValues(input []int) (int, error) {
+func (day DayOne) aggregateIncreasedValues(input []int) int {
 	increasedCounter := 0
 	buffer := -1
 
@@ -49,12 +39,12 @@ func (day DayOne) aggregateIncreasedValues(input []int) (int, error) {
 		buffer = value
 	}
 
-	return increasedCounter, nil
+	return increasedCounter
 }
 
-func (day *DayOne) combineSlidingWindow(input []int) ([]int, error) {
+func (day *DayOne) combineSlidingWindow(input []int) []int {
 	if len(input) < 3 {
-		return nil, errors.New("input array is to short, must be at least of length 3")
+		panic("input array is to short, must be at least of length 3")
 	}
 
 	var result = make([]int, len(input)-2)
@@ -72,5 +62,5 @@ func (day *DayOne) combineSlidingWindow(input []int) ([]int, error) {
 		}
 	}
 
-	return result, nil
+	return result
 }

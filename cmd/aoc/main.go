@@ -9,6 +9,12 @@ import (
 )
 
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Fatalf("Error in execution: %+v", r)
+		}
+	}()
+
 	var day, star int
 	var inputFile string
 
@@ -25,10 +31,7 @@ func main() {
 		log.Fatalf("%d is not a valid star of the advent of code.", star)
 	}
 
-	input, err := internal.ReadFileLineByLine(inputFile)
-	if err != nil {
-		log.Fatalf("failed to read input file at %s", inputFile)
-	}
+	input := internal.ReadFileLineByLine(inputFile)
 
 	daySolver := findSolver(day)
 	if daySolver == nil {
@@ -38,15 +41,12 @@ func main() {
 	var solution string
 	switch star {
 	case 1:
-		solution, err = daySolver.SolveStarOne(input)
+		solution = daySolver.SolveStarOne(input)
 	case 2:
-		solution, err = daySolver.SolveStarTwo(input)
+		solution = daySolver.SolveStarTwo(input)
 	}
 
-	if err != nil {
-		log.Fatalf("error solving the input: %+v", err)
-	}
-	fmt.Printf("The solution of day %d star %d is: %s", day, star, solution)
+	fmt.Printf(solution)
 }
 
 func findSolver(day int) internal.IDaySolver {
