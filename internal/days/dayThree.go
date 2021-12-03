@@ -11,12 +11,19 @@ type DayThree struct {
 	bitCounts []int
 }
 
+type maskBits string
+
+const (
+	common   maskBits = "common"
+	uncommon          = "uncommon"
+)
+
 func (day *DayThree) SolveStarOne(input []string) string {
-	return day.parseInput(input).getPowerConsumption()
+	return day.parseInput(input).getPowerConsumptionRating()
 }
 
 func (day *DayThree) SolveStarTwo(input []string) string {
-	return "What, are you impatient? We do not even approached this far in December 2021 ..."
+	return day.parseInput(input).getLifeSupportRating()
 }
 
 func (day *DayThree) parseInput(input []string) *DayThree {
@@ -39,7 +46,7 @@ func (day *DayThree) parseInput(input []string) *DayThree {
 	return day
 }
 
-func (day *DayThree) getPowerConsumption() string {
+func (day *DayThree) getPowerConsumptionRating() string {
 	var gamma = 0
 	var epsilon = 0
 	var threshold = len(day.values) / 2
@@ -53,6 +60,48 @@ func (day *DayThree) getPowerConsumption() string {
 	}
 
 	return fmt.Sprintf("%d", gamma*epsilon)
+}
+
+func (day *DayThree) getLifeSupportRating() string {
+	oxygenValues := make([]int, len(day.values))
+	copy(oxygenValues, day.values)
+	high := pow2(len(day.bitCounts) - 1)
+
+	for len(oxygenValues) > 1 && high >= 1 {
+		oxygenValues = filterByMaskBit(oxygenValues, high, common)
+		high = high / 2
+	}
+
+	carbonValues := make([]int, len(day.values))
+	copy(carbonValues, day.values)
+	high = pow2(len(day.bitCounts) - 1)
+
+	for len(carbonValues) > 1 && high >= 1 {
+		carbonValues = filterByMaskBit(carbonValues, high, uncommon)
+		high = high / 2
+	}
+
+	return fmt.Sprintf("%d", oxygenValues[0]*carbonValues[0])
+}
+
+func filterByMaskBit(values []int, high int, mask maskBits) []int {
+	var withOnes []int
+	var withZeros []int
+
+	for _, value := range values {
+		if (value & high) == high {
+			withOnes = append(withOnes, value)
+		} else {
+			withZeros = append(withZeros, value)
+		}
+	}
+
+	if mask == common && len(withOnes) >= len(withZeros) ||
+		mask == uncommon && len(withOnes) < len(withZeros) {
+		return withOnes
+	}
+
+	return withZeros
 }
 
 func pow2(x int) int {
