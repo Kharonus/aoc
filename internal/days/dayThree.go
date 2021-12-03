@@ -85,8 +85,8 @@ func (day *DayThree) getLifeSupportRating() string {
 }
 
 func filterByMaskBit(values []int, high int, mask maskBits) []int {
-	var withOnes []int
-	var withZeros []int
+	var withOnes = make([]int, 0, len(values))
+	var withZeros = make([]int, 0, len(values))
 
 	for _, value := range values {
 		if (value & high) == high {
