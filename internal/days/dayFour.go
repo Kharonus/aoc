@@ -20,11 +20,11 @@ type DayFour struct {
 }
 
 func (day *DayFour) SolveStarOne(input []string) string {
-	return day.parseInput(input).applyNumbersUntilSolved().result()
+	return day.parseInput(input).applyNumbersUntilFirstSolved().result()
 }
 
 func (day *DayFour) SolveStarTwo(input []string) string {
-	return "What, are you impatient? We do not even approached this far in December 2021 ..."
+	return day.parseInput(input).applyNumbersUntilLastSolved().result()
 }
 
 func (day *DayFour) parseInput(input []string) *DayFour {
@@ -45,7 +45,7 @@ func (day *DayFour) parseInput(input []string) *DayFour {
 	return day
 }
 
-func (day *DayFour) applyNumbersUntilSolved() *DayFour {
+func (day *DayFour) applyNumbersUntilFirstSolved() *DayFour {
 	var solved = func() *board {
 		for _, b := range day.boards {
 			if b.isSolved() {
@@ -70,21 +70,38 @@ func (day *DayFour) applyNumbersUntilSolved() *DayFour {
 	return day
 }
 
-func parseBoard(input []string) *board {
-	if len(input) != 5 {
-		panic(fmt.Sprintf("invalid board input %s", strings.Join(input, "\n")))
+func (day *DayFour) applyNumbersUntilLastSolved() *DayFour {
+	var unsolved = func() []*board {
+		var result []*board
+		for _, b := range day.boards {
+			if !b.isSolved() {
+				result = append(result, b)
+			}
+		}
+		return result
 	}
 
-	var b board
-	b.fromIntSlice([][]int{
-		parseLine(input[0], " "),
-		parseLine(input[1], " "),
-		parseLine(input[2], " "),
-		parseLine(input[3], " "),
-		parseLine(input[4], " "),
-	})
+	round := 0
+	var unsolvedBoards = day.boards
+	for len(unsolvedBoards) > 1 && round < len(day.values) {
+		for _, b := range day.boards {
+			b.markNumber(day.values[round])
+		}
+		unsolvedBoards = unsolved()
+		round++
+	}
 
-	return &b
+	lastBoard := unsolvedBoards[0]
+	for !lastBoard.isSolved() && round < len(day.values) {
+		for _, b := range day.boards {
+			b.markNumber(day.values[round])
+		}
+		round++
+	}
+
+	day.winnerRating = unsolvedBoards[0].getRating(day.values[round-1])
+
+	return day
 }
 
 func (b *board) fromIntSlice(input [][]int) {
@@ -130,6 +147,23 @@ func (b *board) getRating(lastNumber int) int {
 	}
 
 	return result * lastNumber
+}
+
+func parseBoard(input []string) *board {
+	if len(input) != 5 {
+		panic(fmt.Sprintf("invalid board input %s", strings.Join(input, "\n")))
+	}
+
+	var b board
+	b.fromIntSlice([][]int{
+		parseLine(input[0], " "),
+		parseLine(input[1], " "),
+		parseLine(input[2], " "),
+		parseLine(input[3], " "),
+		parseLine(input[4], " "),
+	})
+
+	return &b
 }
 
 func parseLine(str, sep string) []int {
