@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/Kharonus/aoc/internal/days/5"
 	"log"
 
 	"github.com/Kharonus/aoc/internal"
@@ -59,7 +60,7 @@ func findSolver(day int) internal.IDaySolver {
 	case 4:
 		daySolver = &days.DayFour{}
 	case 5:
-		daySolver = &days.DayFive{}
+		daySolver = &five.Day{}
 	case 6:
 		daySolver = &days.DaySix{}
 	case 7:
