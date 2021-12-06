@@ -6,12 +6,8 @@ import (
 	"strings"
 )
 
-type fish struct {
-	age int
-}
-
 type DaySix struct {
-	swarm []*fish
+	swarm [9]int
 }
 
 func (day *DaySix) SolveStarOne(input []string) string {
@@ -19,7 +15,7 @@ func (day *DaySix) SolveStarOne(input []string) string {
 }
 
 func (day *DaySix) SolveStarTwo(input []string) string {
-	return day.parseInput(input).reproduce(160).result()
+	return day.parseInput(input).reproduce(256).result()
 }
 
 func (day *DaySix) parseInput(input []string) *DaySix {
@@ -28,14 +24,13 @@ func (day *DaySix) parseInput(input []string) *DaySix {
 	}
 
 	fishes := strings.Split(strings.TrimSpace(input[0]), ",")
-	day.swarm = make([]*fish, len(fishes))
-	for idx, s := range fishes {
+	for _, s := range fishes {
 		age, err := strconv.Atoi(s)
-		if err != nil {
+		if err != nil || age < 0 || age > 8 {
 			panic(fmt.Sprintf("invalid age '%s'", s))
 		}
 
-		day.swarm[idx] = &fish{age: age}
+		day.swarm[age] += 1
 	}
 
 	return day
@@ -43,29 +38,25 @@ func (day *DaySix) parseInput(input []string) *DaySix {
 
 func (day *DaySix) reproduce(days int) *DaySix {
 	for i := 0; i < days; i++ {
-		currentSwarmLength := len(day.swarm)
-		for j := 0; j < currentSwarmLength; j++ {
-			if day.swarm[j].age == 0 {
-				day.swarm = append(day.swarm, &fish{age: 8})
-				day.swarm[j].age = 6
-				continue
-			}
+		var newSwarm [9]int
+		newSwarm[0] = day.swarm[1]
+		newSwarm[1] = day.swarm[2]
+		newSwarm[2] = day.swarm[3]
+		newSwarm[3] = day.swarm[4]
+		newSwarm[4] = day.swarm[5]
+		newSwarm[5] = day.swarm[6]
+		newSwarm[6] = day.swarm[7] + day.swarm[0]
+		newSwarm[7] = day.swarm[8]
+		newSwarm[8] = day.swarm[0]
 
-			day.swarm[j].age -= 1
-		}
+		day.swarm = newSwarm
 	}
 
 	return day
 }
 
 func (day *DaySix) result() string {
-	return fmt.Sprintf("%d", len(day.swarm))
-}
-
-func (day *DaySix) String() string {
-	result := ""
-	for _, f := range day.swarm {
-		result += fmt.Sprintf("%d,", f.age)
-	}
-	return result
+	sum := day.swarm[0] + day.swarm[1] + day.swarm[2] + day.swarm[3] +
+		day.swarm[4] + day.swarm[5] + day.swarm[6] + day.swarm[7] + day.swarm[8]
+	return fmt.Sprintf("%d", sum)
 }
