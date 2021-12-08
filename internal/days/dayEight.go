@@ -46,7 +46,7 @@ func (day *DayEight) parseInput(input []string) *DayEight {
 	return day
 }
 
-func (day DayEight) parseLine(line string) (segments, digits []string) {
+func (day *DayEight) parseLine(line string) (segments, digits []string) {
 	split := strings.Split(strings.TrimSpace(line), "|")
 	if len(split) != 2 {
 		panic(fmt.Sprintf("invalid line '%s'", line))
@@ -87,13 +87,13 @@ func (day *DayEight) deduceSegments(segments []string) [7]string {
 	segmentMap[4] = day.uniqueChars(leftSide, segmentMap[1])
 	segmentMap[6] = day.uniqueChars(leftSide, segmentMap[3], sorted[1], sorted[9])
 
-	segmentMap[5] = day.intersect(append([]string{sorted[0]}, sorted[6:9]...)...)
+	segmentMap[5] = day.intersect(append(sorted[6:9], sorted[0])...)
 	segmentMap[2] = day.uniqueChars(segmentMap[5], sorted[0])
 
 	return segmentMap
 }
 
-func (day DayEight) toDigit(segmentMap [7]string, code string) int {
+func (day *DayEight) toDigit(segmentMap [7]string, code string) int {
 	switch len(code) {
 	case 2:
 		return 1
@@ -124,7 +124,7 @@ func (day DayEight) toDigit(segmentMap [7]string, code string) int {
 	panic(fmt.Sprintf("invalid code '%s'", code))
 }
 
-func (day DayEight) sortSegmentsByLength(segments []string) []string {
+func (day *DayEight) sortSegmentsByLength(segments []string) []string {
 	var sorted = make([]string, len(segments))
 	copy(sorted, segments)
 	sort.Slice(sorted, func(i, j int) bool {
@@ -189,14 +189,4 @@ func (day *DayEight) intersect(str ...string) string {
 	}
 
 	return intersection
-}
-
-func (day DayEight) isContainedInAll(char string, segments []string) bool {
-	for _, s := range segments {
-		if !strings.Contains(s, char) {
-			return false
-		}
-	}
-
-	return true
 }
