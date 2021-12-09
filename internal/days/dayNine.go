@@ -2,6 +2,7 @@ package days
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 )
 
@@ -13,6 +14,7 @@ type coordinate struct {
 type DayNine struct {
 	field     [][]int
 	lowPoints []*coordinate
+	basinMap  map[coordinate]int
 }
 
 func (day *DayNine) SolveStarOne(input []string) string {
@@ -20,7 +22,7 @@ func (day *DayNine) SolveStarOne(input []string) string {
 }
 
 func (day *DayNine) SolveStarTwo(input []string) string {
-	return "What, are you impatient? We do not even approached this far in December 2021 ..."
+	return day.parseInput(input).findBasins().resultLargestBasins()
 }
 
 func (day *DayNine) parseInput(input []string) *DayNine {
@@ -69,6 +71,56 @@ func (day *DayNine) findLowPoints() *DayNine {
 	return day
 }
 
+func (day *DayNine) findBasins() *DayNine {
+	day.basinMap = make(map[coordinate]int)
+	basinIndex := 1
+
+	for ri, row := range day.field {
+		for ci, value := range row {
+			if value == 9 {
+				continue
+			}
+
+			var left, top int
+
+			if ci > 0 {
+				left = day.basinMap[coordinate{x: ri, y: ci - 1}]
+			}
+
+			if ri > 0 {
+				top = day.basinMap[coordinate{x: ri - 1, y: ci}]
+			}
+
+			current := coordinate{x: ri, y: ci}
+			switch {
+			case left+top == 0:
+				day.basinMap[current] = basinIndex
+				basinIndex++
+			case left == 0 && top != 0:
+				day.basinMap[current] = top
+			case left != 0 && top == 0:
+				day.basinMap[current] = left
+			case left == top:
+				day.basinMap[current] = left
+			case left != top:
+				day.mergeBasins(left, top, basinIndex)
+				day.basinMap[current] = basinIndex
+				basinIndex++
+			}
+		}
+	}
+
+	return day
+}
+
+func (day *DayNine) mergeBasins(b1, b2, new int) {
+	for point, basinIdx := range day.basinMap {
+		if basinIdx == b1 || basinIdx == b2 {
+			day.basinMap[point] = new
+		}
+	}
+}
+
 func (day *DayNine) resultRiskLevel() string {
 	sum := 0
 
@@ -77,4 +129,22 @@ func (day *DayNine) resultRiskLevel() string {
 	}
 
 	return fmt.Sprintf("%d", sum)
+}
+
+func (day *DayNine) resultLargestBasins() string {
+	basinSize := make(map[int]int)
+	for _, basinIdx := range day.basinMap {
+		basinSize[basinIdx] += 1
+	}
+
+	var biggestSizes = make([]int, 3)
+	for _, size := range basinSize {
+		if size > biggestSizes[0] {
+			biggestSizes[0] = size
+		}
+
+		sort.Ints(biggestSizes)
+	}
+
+	return fmt.Sprintf("%d", biggestSizes[0]*biggestSizes[1]*biggestSizes[2])
 }
