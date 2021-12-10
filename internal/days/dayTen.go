@@ -2,10 +2,12 @@ package days
 
 import (
 	"fmt"
+	"sort"
 )
 
 type DayTen struct {
-	score int
+	score            int
+	incompleteScores []int
 }
 
 type bodyRune rune
@@ -22,14 +24,16 @@ const (
 )
 
 func (day *DayTen) SolveStarOne(input []string) string {
-	return day.checkCorruptLines(input).resultSyntaxScore()
+	return day.checkLines(input).resultSyntaxScore()
 }
 
 func (day *DayTen) SolveStarTwo(input []string) string {
-	return "What, are you impatient? We do not even approached this far in December 2021 ..."
+	return day.checkLines(input).resultIncompleteLineScore()
 }
 
-func (day *DayTen) checkCorruptLines(input []string) *DayTen {
+func (day *DayTen) checkLines(input []string) *DayTen {
+	day.incompleteScores = make([]int, 0, len(input))
+
 	for _, line := range input {
 		day.checkLine(line)
 	}
@@ -53,12 +57,14 @@ func (day *DayTen) checkLine(line string) {
 			last := openRunes[stackSize-1]
 			if !day.validBody(last, r) {
 				day.score += day.syntaxScore(r)
-				break
+				return
 			}
 
 			openRunes = openRunes[:stackSize-1]
 		}
 	}
+
+	day.incompleteScores = append(day.incompleteScores, day.incompleteLineScore(openRunes))
 }
 
 func (day *DayTen) isOpenRune(r bodyRune) bool {
@@ -99,6 +105,31 @@ func (day *DayTen) syntaxScore(r bodyRune) int {
 	}
 }
 
+func (day *DayTen) incompleteLineScore(openRunes []bodyRune) int {
+	totalScore := 0
+	for i := len(openRunes) - 1; i >= 0; i-- {
+		totalScore *= 5
+
+		switch openRunes[i] {
+		case openParenthesis:
+			totalScore += 1
+		case openBracket:
+			totalScore += 2
+		case openCurly:
+			totalScore += 3
+		case openDiamond:
+			totalScore += 4
+		}
+	}
+
+	return totalScore
+}
+
 func (day *DayTen) resultSyntaxScore() string {
 	return fmt.Sprintf("%d", day.score)
+}
+
+func (day *DayTen) resultIncompleteLineScore() string {
+	sort.Ints(day.incompleteScores)
+	return fmt.Sprintf("%d", day.incompleteScores[len(day.incompleteScores)/2])
 }
