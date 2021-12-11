@@ -19,41 +19,41 @@ type point struct {
 	y int
 }
 
-type Day struct {
+type Solver struct {
 	vents map[point]int
 }
 
-func (day *Day) SolveStarOne(input []string) string {
-	return day.parseInput(input, false).result()
+func (solver *Solver) SolveStarOne(input []string) string {
+	return solver.parseInput(input, false).result()
 }
 
-func (day *Day) SolveStarTwo(input []string) string {
-	return day.parseInput(input, true).result()
+func (solver *Solver) SolveStarTwo(input []string) string {
+	return solver.parseInput(input, true).result()
 }
 
-func (day *Day) parseInput(input []string, withDiagonals bool) *Day {
-	day.vents = map[point]int{}
+func (solver *Solver) parseInput(input []string, withDiagonals bool) *Solver {
+	solver.vents = map[point]int{}
 	for _, s := range input {
-		line := day.parseLine(s)
-		if !withDiagonals && !day.isHorizontal(line) && !day.isVertical(line) {
+		line := solver.parseLine(s)
+		if !withDiagonals && !solver.isHorizontal(line) && !solver.isVertical(line) {
 			continue
 		}
 
-		day.applyLineToVents(line)
+		solver.applyLineToVents(line)
 	}
 
-	return day
+	return solver
 }
 
-func (day *Day) isHorizontal(line [2]*point) bool {
+func (solver *Solver) isHorizontal(line [2]*point) bool {
 	return line[0].y == line[1].y
 }
 
-func (day *Day) isVertical(line [2]*point) bool {
+func (solver *Solver) isVertical(line [2]*point) bool {
 	return line[0].x == line[1].x
 }
 
-func (day *Day) applyLineToVents(line [2]*point) {
+func (solver *Solver) applyLineToVents(line [2]*point) {
 	var startX, startY, endX, endY int
 	startX = line[0].x
 	startY = line[0].y
@@ -83,7 +83,7 @@ func (day *Day) applyLineToVents(line [2]*point) {
 
 	run := true
 	for run {
-		day.vents[point{x: startX, y: startY}] += 1
+		solver.vents[point{x: startX, y: startY}] += 1
 
 		run = startX != endX || startY != endY
 
@@ -103,9 +103,9 @@ func (day *Day) applyLineToVents(line [2]*point) {
 	}
 }
 
-func (day *Day) result() string {
+func (solver *Solver) result() string {
 	count := 0
-	for _, value := range day.vents {
+	for _, value := range solver.vents {
 		if value > 1 {
 			count++
 		}
@@ -114,20 +114,20 @@ func (day *Day) result() string {
 	return fmt.Sprintf("%d", count)
 }
 
-func (day *Day) parseLine(line string) [2]*point {
+func (solver *Solver) parseLine(line string) [2]*point {
 	points := strings.Split(line, "->")
 	if len(points) != 2 {
 		panic(fmt.Sprintf("invalid input '%s'", line))
 	}
 
 	var result [2]*point
-	result[0] = day.parsePoint(points[0])
-	result[1] = day.parsePoint(points[1])
+	result[0] = solver.parsePoint(points[0])
+	result[1] = solver.parsePoint(points[1])
 
 	return result
 }
 
-func (day *Day) parsePoint(s string) *point {
+func (solver *Solver) parsePoint(s string) *point {
 	coords := strings.Split(strings.TrimSpace(s), ",")
 	if len(coords) != 2 {
 		panic(fmt.Sprintf("invalid point input '%s'", s))
@@ -149,11 +149,11 @@ func (day *Day) parsePoint(s string) *point {
 	return &p
 }
 
-func (day *Day) String() string {
+func (solver *Solver) String() string {
 	result := ""
 	for i := 0; i < 10; i++ {
 		for j := 0; j < 10; j++ {
-			value := day.vents[point{x: j, y: i}]
+			value := solver.vents[point{x: j, y: i}]
 			if value == 0 {
 				result += "."
 			} else {

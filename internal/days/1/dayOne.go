@@ -1,4 +1,4 @@
-package days
+package one
 
 import (
 	"fmt"
@@ -7,29 +7,30 @@ import (
 	"github.com/Kharonus/aoc/internal"
 )
 
-type DayOne struct{}
+type Solver struct{}
 
-func (day *DayOne) SolveStarOne(input []string) string {
+func (solver *Solver) SolveStarOne(input []string) string {
 	values, err := internal.StringSliceToIntSlice(input)
 	if err != nil {
 		panic(fmt.Sprintf("input is no list of integer values"))
 	}
 
-	increasedCounter := day.aggregateIncreasedValues(values)
+	increasedCounter := aggregateIncreasedValues(values)
 	return strconv.Itoa(increasedCounter)
 }
 
-func (day *DayOne) SolveStarTwo(input []string) string {
+func (solver *Solver) SolveStarTwo(input []string) string {
 	values, err := internal.StringSliceToIntSlice(input)
 	if err != nil {
 		panic(fmt.Sprintf("input is no list of integer values"))
 	}
 
-	values = day.combineSlidingWindow(values)
-	return strconv.Itoa(day.aggregateIncreasedValues(values))
+	values = combineSlidingWindow(values)
+	return strconv.Itoa(aggregateIncreasedValues(values))
 }
 
-func (day DayOne) aggregateIncreasedValues(input []int) int {
+
+func aggregateIncreasedValues(input []int) int {
 	increasedCounter := 0
 	buffer := -1
 
@@ -44,7 +45,7 @@ func (day DayOne) aggregateIncreasedValues(input []int) int {
 	return increasedCounter
 }
 
-func (day *DayOne) combineSlidingWindow(input []int) []int {
+func combineSlidingWindow(input []int) []int {
 	if len(input) < 3 {
 		panic("input array is to short, must be at least of length 3")
 	}
