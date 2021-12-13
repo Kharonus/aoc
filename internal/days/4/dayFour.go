@@ -1,4 +1,4 @@
-package days
+package four
 
 import (
 	"fmt"
@@ -13,41 +13,41 @@ type boardNumber struct {
 
 type board [5][5]boardNumber
 
-type DayFour struct {
+type Solver struct {
 	values       []int
 	boards       []*board
 	winnerRating int
 }
 
-func (day *DayFour) SolveStarOne(input []string) string {
-	return day.parseInput(input).applyNumbersUntilFirstSolved().result()
+func (solver *Solver) SolveStarOne(input []string) string {
+	return solver.parseInput(input).applyNumbersUntilFirstSolved().result()
 }
 
-func (day *DayFour) SolveStarTwo(input []string) string {
-	return day.parseInput(input).applyNumbersUntilLastSolved().result()
+func (solver *Solver) SolveStarTwo(input []string) string {
+	return solver.parseInput(input).applyNumbersUntilLastSolved().result()
 }
 
-func (day *DayFour) parseInput(input []string) *DayFour {
+func (solver *Solver) parseInput(input []string) *Solver {
 	validInputLength := len(input) > 6 && ((len(input)-1)%6) == 0
 
 	if !validInputLength {
 		panic("input has invalid length")
 	}
 
-	day.values = parseLine(input[0], ",")
+	solver.values = parseLine(input[0], ",")
 
 	lineNumber := 1
 	for lineNumber < len(input) {
-		day.boards = append(day.boards, parseBoard(input[lineNumber+1:lineNumber+6]))
+		solver.boards = append(solver.boards, parseBoard(input[lineNumber+1:lineNumber+6]))
 		lineNumber += 6
 	}
 
-	return day
+	return solver
 }
 
-func (day *DayFour) applyNumbersUntilFirstSolved() *DayFour {
+func (solver *Solver) applyNumbersUntilFirstSolved() *Solver {
 	var solved = func() *board {
-		for _, b := range day.boards {
+		for _, b := range solver.boards {
 			if b.isSolved() {
 				return b
 			}
@@ -57,23 +57,23 @@ func (day *DayFour) applyNumbersUntilFirstSolved() *DayFour {
 
 	round := 0
 	var solvedBoard *board
-	for solvedBoard == nil && round < len(day.values) {
-		for _, b := range day.boards {
-			b.markNumber(day.values[round])
+	for solvedBoard == nil && round < len(solver.values) {
+		for _, b := range solver.boards {
+			b.markNumber(solver.values[round])
 		}
 		solvedBoard = solved()
 		round++
 	}
 
-	day.winnerRating = solvedBoard.getRating(day.values[round-1])
+	solver.winnerRating = solvedBoard.getRating(solver.values[round-1])
 
-	return day
+	return solver
 }
 
-func (day *DayFour) applyNumbersUntilLastSolved() *DayFour {
+func (solver *Solver) applyNumbersUntilLastSolved() *Solver {
 	var unsolved = func() []*board {
 		var result []*board
-		for _, b := range day.boards {
+		for _, b := range solver.boards {
 			if !b.isSolved() {
 				result = append(result, b)
 			}
@@ -82,26 +82,26 @@ func (day *DayFour) applyNumbersUntilLastSolved() *DayFour {
 	}
 
 	round := 0
-	var unsolvedBoards = day.boards
-	for len(unsolvedBoards) > 1 && round < len(day.values) {
-		for _, b := range day.boards {
-			b.markNumber(day.values[round])
+	var unsolvedBoards = solver.boards
+	for len(unsolvedBoards) > 1 && round < len(solver.values) {
+		for _, b := range solver.boards {
+			b.markNumber(solver.values[round])
 		}
 		unsolvedBoards = unsolved()
 		round++
 	}
 
 	lastBoard := unsolvedBoards[0]
-	for !lastBoard.isSolved() && round < len(day.values) {
-		for _, b := range day.boards {
-			b.markNumber(day.values[round])
+	for !lastBoard.isSolved() && round < len(solver.values) {
+		for _, b := range solver.boards {
+			b.markNumber(solver.values[round])
 		}
 		round++
 	}
 
-	day.winnerRating = unsolvedBoards[0].getRating(day.values[round-1])
+	solver.winnerRating = unsolvedBoards[0].getRating(solver.values[round-1])
 
-	return day
+	return solver
 }
 
 func (b *board) fromIntSlice(input [][]int) {
@@ -192,6 +192,6 @@ func removeEmptyStrings(slice []string) []string {
 	return result
 }
 
-func (day *DayFour) result() string {
-	return fmt.Sprintf("%d", day.winnerRating)
+func (solver *Solver) result() string {
+	return fmt.Sprintf("%d", solver.winnerRating)
 }

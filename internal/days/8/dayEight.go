@@ -1,4 +1,4 @@
-package days
+package eight
 
 import (
 	"fmt"
@@ -12,41 +12,41 @@ type codedLine struct {
 	segmentMap [7]string
 }
 
-type DayEight struct {
+type Solver struct {
 	digitsUnique []string
 	lines        []*codedLine
 }
 
-func (day *DayEight) SolveStarOne(input []string) string {
-	return day.parseInput(input).resultUniqueDigits()
+func (solver *Solver) SolveStarOne(input []string) string {
+	return solver.parseInput(input).resultUniqueDigits()
 }
 
-func (day *DayEight) SolveStarTwo(input []string) string {
-	return day.parseInput(input).resultDecodedSum()
+func (solver *Solver) SolveStarTwo(input []string) string {
+	return solver.parseInput(input).resultDecodedSum()
 }
 
-func (day *DayEight) parseInput(input []string) *DayEight {
-	day.digitsUnique = make([]string, 0, len(input)*4)
-	day.lines = make([]*codedLine, 0, len(input))
+func (solver *Solver) parseInput(input []string) *Solver {
+	solver.digitsUnique = make([]string, 0, len(input)*4)
+	solver.lines = make([]*codedLine, 0, len(input))
 	for _, s := range input {
-		segments, digits := day.parseLine(s)
+		segments, digits := solver.parseLine(s)
 
-		day.lines = append(day.lines, &codedLine{
+		solver.lines = append(solver.lines, &codedLine{
 			digits:     digits,
-			segmentMap: day.deduceSegments(segments),
+			segmentMap: solver.deduceSegments(segments),
 		})
 
 		for _, d := range digits {
 			if len(d) == 2 || len(d) == 3 || len(d) == 4 || len(d) == 7 {
-				day.digitsUnique = append(day.digitsUnique, d)
+				solver.digitsUnique = append(solver.digitsUnique, d)
 			}
 		}
 	}
 
-	return day
+	return solver
 }
 
-func (day *DayEight) parseLine(line string) (segments, digits []string) {
+func (solver *Solver) parseLine(line string) (segments, digits []string) {
 	split := strings.Split(strings.TrimSpace(line), "|")
 	if len(split) != 2 {
 		panic(fmt.Sprintf("invalid line '%s'", line))
@@ -57,16 +57,16 @@ func (day *DayEight) parseLine(line string) (segments, digits []string) {
 	return
 }
 
-func (day *DayEight) resultUniqueDigits() string {
-	return fmt.Sprintf("%d", len(day.digitsUnique))
+func (solver *Solver) resultUniqueDigits() string {
+	return fmt.Sprintf("%d", len(solver.digitsUnique))
 }
 
-func (day *DayEight) resultDecodedSum() string {
+func (solver *Solver) resultDecodedSum() string {
 	sum := 0
-	for _, line := range day.lines {
+	for _, line := range solver.lines {
 		number := 0
 		for i := 0; i < len(line.digits); i++ {
-			number += int(math.Pow10(3-i)) * day.toDigit(line.segmentMap, line.digits[i])
+			number += int(math.Pow10(3-i)) * solver.toDigit(line.segmentMap, line.digits[i])
 		}
 		sum += number
 	}
@@ -74,26 +74,26 @@ func (day *DayEight) resultDecodedSum() string {
 	return fmt.Sprintf("%d", sum)
 }
 
-func (day *DayEight) deduceSegments(segments []string) [7]string {
+func (solver *Solver) deduceSegments(segments []string) [7]string {
 	var segmentMap [7]string
-	sorted := day.sortSegmentsByLength(segments)
+	sorted := solver.sortSegmentsByLength(segments)
 
-	leftSide := day.uniqueChars(sorted[3:6]...)
-	topLeftMiddle := day.uniqueChars(sorted[0], sorted[2])
+	leftSide := solver.uniqueChars(sorted[3:6]...)
+	topLeftMiddle := solver.uniqueChars(sorted[0], sorted[2])
 
-	segmentMap[0] = day.uniqueChars(sorted[0], sorted[1])
-	segmentMap[1] = day.intersect(leftSide, topLeftMiddle)
-	segmentMap[3] = day.uniqueChars(segmentMap[1], topLeftMiddle)
-	segmentMap[4] = day.uniqueChars(leftSide, segmentMap[1])
-	segmentMap[6] = day.uniqueChars(leftSide, segmentMap[3], sorted[1], sorted[9])
+	segmentMap[0] = solver.uniqueChars(sorted[0], sorted[1])
+	segmentMap[1] = solver.intersect(leftSide, topLeftMiddle)
+	segmentMap[3] = solver.uniqueChars(segmentMap[1], topLeftMiddle)
+	segmentMap[4] = solver.uniqueChars(leftSide, segmentMap[1])
+	segmentMap[6] = solver.uniqueChars(leftSide, segmentMap[3], sorted[1], sorted[9])
 
-	segmentMap[5] = day.intersect(append(sorted[6:9], sorted[0])...)
-	segmentMap[2] = day.uniqueChars(segmentMap[5], sorted[0])
+	segmentMap[5] = solver.intersect(append(sorted[6:9], sorted[0])...)
+	segmentMap[2] = solver.uniqueChars(segmentMap[5], sorted[0])
 
 	return segmentMap
 }
 
-func (day *DayEight) toDigit(segmentMap [7]string, code string) int {
+func (solver *Solver) toDigit(segmentMap [7]string, code string) int {
 	switch len(code) {
 	case 2:
 		return 1
@@ -124,7 +124,7 @@ func (day *DayEight) toDigit(segmentMap [7]string, code string) int {
 	panic(fmt.Sprintf("invalid code '%s'", code))
 }
 
-func (day *DayEight) sortSegmentsByLength(segments []string) []string {
+func (solver *Solver) sortSegmentsByLength(segments []string) []string {
 	var sorted = make([]string, len(segments))
 	copy(sorted, segments)
 	sort.Slice(sorted, func(i, j int) bool {
@@ -134,7 +134,7 @@ func (day *DayEight) sortSegmentsByLength(segments []string) []string {
 	return sorted
 }
 
-func (day *DayEight) uniqueChars(str ...string) string {
+func (solver *Solver) uniqueChars(str ...string) string {
 	var unique, tested string
 
 	for idx, s := range str {
@@ -163,7 +163,7 @@ func (day *DayEight) uniqueChars(str ...string) string {
 	return unique
 }
 
-func (day *DayEight) intersect(str ...string) string {
+func (solver *Solver) intersect(str ...string) string {
 	var intersection, tested string
 	for _, s := range str {
 

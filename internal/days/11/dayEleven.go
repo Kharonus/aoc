@@ -1,25 +1,25 @@
-package days
+package eleven
 
 import (
 	"fmt"
 	"strconv"
 )
 
-type DayEleven struct {
+type Solver struct {
 	flashes             int
 	synchronizationStep int
 	octopusField        [10][10]int
 }
 
-func (day *DayEleven) SolveStarOne(input []string) string {
-	return day.parseInput(input).flashFor(100).resultNumberFlashes()
+func (solver *Solver) SolveStarOne(input []string) string {
+	return solver.parseInput(input).flashFor(100).resultNumberFlashes()
 }
 
-func (day *DayEleven) SolveStarTwo(input []string) string {
-	return day.parseInput(input).flashFor(-1).resultSynchronizationStep()
+func (solver *Solver) SolveStarTwo(input []string) string {
+	return solver.parseInput(input).flashFor(-1).resultSynchronizationStep()
 }
 
-func (day *DayEleven) parseInput(input []string) *DayEleven {
+func (solver *Solver) parseInput(input []string) *Solver {
 	if len(input) != 10 {
 		panic("invalid input length")
 	}
@@ -34,51 +34,51 @@ func (day *DayEleven) parseInput(input []string) *DayEleven {
 			if err != nil {
 				panic(fmt.Sprintf("invalid energy level '%c'", c))
 			}
-			day.octopusField[row][col] = energy
+			solver.octopusField[row][col] = energy
 		}
 	}
 
-	return day
+	return solver
 }
 
-func (day *DayEleven) flashFor(days int) *DayEleven {
+func (solver *Solver) flashFor(days int) *Solver {
 	step := 0
 
 	for days == -1 || step < days {
 		step++
 
 		for {
-			if !day.flashOnce() {
+			if !solver.flashOnce() {
 				break
 			}
 		}
 
-		if days == -1 && day.flashSynchronized() {
-			day.synchronizationStep = step
+		if days == -1 && solver.flashSynchronized() {
+			solver.synchronizationStep = step
 			break
 		}
 
-		day.raiseEnergyLevel()
+		solver.raiseEnergyLevel()
 	}
 
-	return day
+	return solver
 }
 
-func (day *DayEleven) raiseEnergyLevel() {
+func (solver *Solver) raiseEnergyLevel() {
 	for row := 0; row < 10; row++ {
 		for col := 0; col < 10; col++ {
-			day.octopusField[row][col]++
+			solver.octopusField[row][col]++
 		}
 	}
 }
 
-func (day *DayEleven) flashOnce() bool {
+func (solver *Solver) flashOnce() bool {
 	flashed := false
 
 	for row := 0; row < 10; row++ {
 		for col := 0; col < 10; col++ {
-			if day.octopusField[row][col] >= 9 {
-				day.flashOctopus(row, col)
+			if solver.octopusField[row][col] >= 9 {
+				solver.flashOctopus(row, col)
 				flashed = true
 			}
 		}
@@ -87,10 +87,10 @@ func (day *DayEleven) flashOnce() bool {
 	return flashed
 }
 
-func (day *DayEleven) flashSynchronized() bool {
+func (solver *Solver) flashSynchronized() bool {
 	for row := 0; row < 10; row++ {
 		for col := 0; col < 10; col++ {
-			if day.octopusField[row][col] != -1 {
+			if solver.octopusField[row][col] != -1 {
 				return false
 			}
 		}
@@ -99,10 +99,10 @@ func (day *DayEleven) flashSynchronized() bool {
 	return true
 }
 
-func (day *DayEleven) flashOctopus(row, col int) {
+func (solver *Solver) flashOctopus(row, col int) {
 	// an octopus with -1 flashed this very round and cannot increase any further until next flash round
-	day.octopusField[row][col] = -1
-	day.flashes++
+	solver.octopusField[row][col] = -1
+	solver.flashes++
 
 	type coordinate struct{ row, col int }
 	var neighbors = make([]coordinate, 0, 8)
@@ -133,16 +133,16 @@ func (day *DayEleven) flashOctopus(row, col int) {
 	}
 
 	for _, n := range neighbors {
-		if day.octopusField[n.row][n.col] >= 0 {
-			day.octopusField[n.row][n.col] += 1
+		if solver.octopusField[n.row][n.col] >= 0 {
+			solver.octopusField[n.row][n.col] += 1
 		}
 	}
 }
 
-func (day *DayEleven) resultNumberFlashes() string {
-	return fmt.Sprintf("%d", day.flashes)
+func (solver *Solver) resultNumberFlashes() string {
+	return fmt.Sprintf("%d", solver.flashes)
 }
 
-func (day *DayEleven) resultSynchronizationStep() string {
-	return fmt.Sprintf("%d", day.synchronizationStep)
+func (solver *Solver) resultSynchronizationStep() string {
+	return fmt.Sprintf("%d", solver.synchronizationStep)
 }
