@@ -156,12 +156,17 @@ func parseFoldInstruction(line string) *fold {
 }
 
 func (solver *Solver) result() string {
+	fmt.Println(solver)
 	return fmt.Sprintf("%d", len(solver.dots))
 }
 
 func (solver *Solver) String() string {
 	var maxX, maxY int
+	dotMap := map[coordinate]bool{}
+
 	for _, d := range solver.dots {
+		dotMap[*d] = true
+
 		if d.x > maxX {
 			maxX = d.x
 		}
@@ -171,15 +176,9 @@ func (solver *Solver) String() string {
 	}
 
 	result := ""
-	for i := 0; i < maxY; i++ {
-		for j := 0; j < maxX; j++ {
-			hasDot := false
-			for _, d := range solver.dots {
-				if d.x == j && d.y == i {
-					hasDot = true
-				}
-			}
-			if hasDot {
+	for i := 0; i <= maxY; i++ {
+		for j := 0; j <= maxX; j++ {
+			if dotMap[coordinate{x: j, y: i}] {
 				result += "#"
 			} else {
 				result += "."
