@@ -7,6 +7,7 @@ import (
 	"github.com/Kharonus/aoc/internal/days/11"
 	"github.com/Kharonus/aoc/internal/days/12"
 	"github.com/Kharonus/aoc/internal/days/13"
+	"github.com/Kharonus/aoc/internal/days/14"
 	"github.com/Kharonus/aoc/internal/days/2"
 	"github.com/Kharonus/aoc/internal/days/4"
 	"github.com/Kharonus/aoc/internal/days/5"
@@ -85,7 +86,7 @@ func findSolver(day int) internal.IDaySolver {
 	case 13:
 		daySolver = &thirteen.Solver{}
 	case 14:
-		daySolver = &days.DayFourteen{}
+		daySolver = &fourteen.Solver{}
 	case 15:
 		daySolver = &days.DayFifteen{}
 	case 16:
