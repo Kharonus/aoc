@@ -7,8 +7,9 @@ import (
 )
 
 type Solver struct {
-	polymer string
-	rules   map[string]string
+	lastElement string
+	rules       map[string][]string
+	moleculeMap map[string]int
 }
 
 func (solver *Solver) SolveStarOne(input []string) string {
@@ -24,63 +25,42 @@ func (solver *Solver) parseInput(input []string) *Solver {
 		panic("invalid input length")
 	}
 
-	solver.polymer = input[0]
-	solver.rules = make(map[string]string)
+	solver.moleculeMap = map[string]int{}
+	for i := 0; i < len(input[0])-1; i++ {
+		molecule := input[0][i : i+2]
+		solver.moleculeMap[molecule] += 1
+	}
+	solver.lastElement = input[0][len(input[0])-1:]
 
+	solver.rules = make(map[string][]string)
 	for _, line := range input[2:] {
-		solver.parseInsertionRule(line)
+		solver.parseRule(line)
 	}
 
 	return solver
 }
 
 func (solver *Solver) insertFor(steps int) *Solver {
-	// iterative
 	for step := 0; step < steps; step++ {
-		fmt.Println(step)
 		solver.expandPolymer()
 	}
-
-	// recursive
-	//result := ""
-	//for i := 0; i < len(solver.polymer)-1; i++ {
-	//	polymerExtension := solver.expandRecursive(steps, solver.polymer[i:i+2])
-	//	if len(result) == 0 {
-	//		result += polymerExtension
-	//	} else {
-	//		result += polymerExtension[1:]
-	//	}
-	//}
-	//solver.polymer = result
 
 	return solver
 }
 
-func (solver *Solver) expandRecursive(steps int, pair string) string {
-	if steps == 0 {
-		return pair
-	}
-
-	insertion := solver.rules[pair]
-
-	left := solver.expandRecursive(steps-1, pair[:1]+insertion)
-	right := solver.expandRecursive(steps-1, insertion+pair[1:])
-
-	return left + right[1:]
-}
-
 func (solver *Solver) expandPolymer() {
-	insertions := make([]string, 0, len(solver.polymer)-1)
-	for i := 0; i < len(solver.polymer)-1; i++ {
-		insertions = append(insertions, solver.rules[solver.polymer[i:i+2]])
+	newMoleculeMap := map[string]int{}
+
+	for molecule, count := range solver.moleculeMap {
+		newMolecules := solver.rules[molecule]
+		newMoleculeMap[newMolecules[0]] += count
+		newMoleculeMap[newMolecules[1]] += count
 	}
 
-	for i := len(insertions) - 1; i >= 0; i-- {
-		solver.polymer = solver.polymer[:i+1] + insertions[i] + solver.polymer[i+1:]
-	}
+	solver.moleculeMap = newMoleculeMap
 }
 
-func (solver *Solver) parseInsertionRule(line string) {
+func (solver *Solver) parseRule(line string) {
 	split := strings.Split(line, "->")
 	if len(split) != 2 {
 		panic(fmt.Sprintf("invalid insertion rule input '%s'", line))
@@ -92,18 +72,20 @@ func (solver *Solver) parseInsertionRule(line string) {
 		panic(fmt.Sprintf("invalid insertion rule input '%s'", line))
 	}
 
-	solver.rules[pair] = element
+	solver.rules[pair] = []string{pair[:1] + element, element + pair[1:]}
 }
 
 func (solver *Solver) result() string {
 	elementMap := map[string]int{}
 
-	for _, element := range solver.polymer {
-		elementMap[string(element)] += 1
+	for molecule, count := range solver.moleculeMap {
+		elementMap[molecule[:1]] += count
 	}
 
+	elementMap[solver.lastElement] += 1
+
 	var max = 0
-	var min = math.MaxInt32
+	var min = math.MaxInt64
 	for _, count := range elementMap {
 		if count > max {
 			max = count
