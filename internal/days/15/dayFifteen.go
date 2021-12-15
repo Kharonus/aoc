@@ -122,6 +122,7 @@ func (solver *Solver) searchLowRiskPath() *Solver {
 			}
 
 			open = append(open, p)
+			//open = replaceIfLowerFOrReplace(open, p)
 		}
 
 		if foundEnd {
@@ -142,6 +143,26 @@ func isInListWithLowerF(list []*pathPoint, p *pathPoint) bool {
 	}
 
 	return false
+}
+
+func replaceIfLowerFOrReplace(list []*pathPoint, point *pathPoint) []*pathPoint {
+	found := false
+	for idx, p := range list {
+		if p.x != point.x || p.y != point.y {
+			continue
+		}
+
+		found = true
+		if p.f > point.f {
+			list[idx] = point
+		}
+	}
+
+	if !found {
+		list = append(list, point)
+	}
+
+	return list
 }
 
 func (solver *Solver) getPotentialSuccessors(point *pathPoint) []*pathPoint {
