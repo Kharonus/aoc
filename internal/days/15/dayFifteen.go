@@ -91,18 +91,22 @@ func (solver *Solver) enlargeCave() *Solver {
 func (solver *Solver) searchLowRiskPath() *Solver {
 	var open = []*pathPoint{solver.start}
 	var closed []*pathPoint
+	step := 0
 
 	for len(open) > 0 {
-		var candidate *pathPoint
-		var candidateIdx int
-		for idx, p := range open {
-			if candidate == nil || candidate.f > p.f {
-				candidate = p
-				candidateIdx = idx
-			}
-		}
+		var candidate = open[0]
+		step++
+		//var candidateIdx int
+		//for idx, p := range open {
+		//	if candidate == nil || candidate.f > p.f {
+		//		candidate = p
+		//		candidateIdx = idx
+		//	}
+		//}
 
-		open = append(open[:candidateIdx], open[candidateIdx+1:]...)
+		fmt.Println(fmt.Sprintf("%d: (%d,%d), distance: %d", step, candidate.x, candidate.y, solver.hScore(candidate)))
+		//open = append(open[:candidateIdx], open[candidateIdx+1:]...)
+		open = open[1:]
 
 		successors := solver.getPotentialSuccessors(candidate)
 		foundEnd := false
@@ -113,23 +117,28 @@ func (solver *Solver) searchLowRiskPath() *Solver {
 				break
 			}
 
-			if isInListWithLowerF(open, p) {
+			//if isInListWithLowerF(open, p) {
+			//	continue
+			//}
+			//
+			//if isInListWithLowerF(closed, p) {
+			//	continue
+			//}
+
+			if existsWithLowerFScore(closed, p) {
 				continue
 			}
 
-			if isInListWithLowerF(closed, p) {
-				continue
-			}
-
-			open = append(open, p)
-			//open = replaceIfLowerFOrReplace(open, p)
+			//open = append(open, p)
+			open = insertAtFScore(open, p)
 		}
 
 		if foundEnd {
 			break
 		}
 
-		closed = append(closed, candidate)
+		//closed = append(closed, candidate)
+		closed = insertAtFScore(closed, candidate)
 	}
 
 	return solver
@@ -163,6 +172,50 @@ func replaceIfLowerFOrReplace(list []*pathPoint, point *pathPoint) []*pathPoint 
 	}
 
 	return list
+}
+
+func insertAtFScore(list []*pathPoint, point *pathPoint) []*pathPoint {
+	insertIdx := len(list)
+	for idx, p := range list {
+		if p.x == point.x && p.y == point.y {
+			return list
+		}
+
+		if p.f < point.f {
+			continue
+		}
+
+		insertIdx = idx
+		break
+	}
+
+	if len(list) < 1 {
+		return []*pathPoint{point}
+	}
+
+	if insertIdx == len(list) {
+		return append(list, point)
+	}
+
+	list = append(list[:insertIdx+1], list[insertIdx:]...)
+	list[insertIdx] = point
+	return list
+}
+
+func existsWithLowerFScore(list []*pathPoint, point *pathPoint) bool {
+	for _, p := range list {
+		if p.x == point.x && p.y == point.y {
+			return true
+		}
+
+		if p.f < point.f {
+			continue
+		}
+
+		break
+	}
+
+	return false
 }
 
 func (solver *Solver) getPotentialSuccessors(point *pathPoint) []*pathPoint {
