@@ -2,20 +2,34 @@ package sixteen
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 )
 
 type Solver struct {
 	bits                []int
 	accumulatedVersions int
+	value               int64
 }
 
+type operation int
+
+const (
+	sum         operation = 0
+	product               = 1
+	minimum               = 2
+	maximum               = 3
+	greaterThan           = 5
+	lessThan              = 6
+	equalTo               = 7
+)
+
 func (solver *Solver) SolveStarOne(input []string) string {
-	return solver.parseInput(input).iteratePackets().result()
+	return solver.parseInput(input).iteratePackets().result(int64(solver.accumulatedVersions))
 }
 
 func (solver *Solver) SolveStarTwo(input []string) string {
-	return "What, are you impatient? We do not even approached this far in December 2021 ..."
+	return solver.parseInput(input).iteratePackets().result(solver.value)
 }
 
 func (solver *Solver) parseInput(input []string) *Solver {
@@ -38,8 +52,9 @@ func (solver *Solver) parseInput(input []string) *Solver {
 func (solver *Solver) iteratePackets() *Solver {
 	var offset int
 	for !solver.remainingBitsAreZeros(offset) {
-		length := solver.parsePacket(offset)
+		length, value := solver.parsePacket(offset)
 		offset += length
+		solver.value = value
 	}
 
 	return solver
@@ -55,23 +70,19 @@ func (solver *Solver) remainingBitsAreZeros(offset int) bool {
 	return true
 }
 
-func (solver *Solver) parsePacket(offset int) int {
-	packetLength := 0
-
+func (solver *Solver) parsePacket(offset int) (length int, value int64) {
 	header := solver.bits[offset : offset+6]
-	packetLength += 6
+	length = 6
 	version, typeId := parsePacketHeader(header)
 	solver.accumulatedVersions += version
 
 	if typeId == 4 {
-		_, length := solver.parseLiteralPacket(offset + 6)
-		packetLength += length
+		l, v := solver.parseLiteralPacket(offset + 6)
+		return length + l, v
 	} else {
-		length := solver.parseOperatorPacket(offset + 6)
-		packetLength += length
+		l, v := solver.parseOperatorPacket(offset+6, operation(typeId))
+		return length + l, v
 	}
-
-	return packetLength
 }
 
 func parsePacketHeader(bits []int) (version, typeId int) {
@@ -81,9 +92,9 @@ func parsePacketHeader(bits []int) (version, typeId int) {
 	return version, typeId
 }
 
-func (solver *Solver) parseLiteralPacket(offset int) (int, int) {
+func (solver *Solver) parseLiteralPacket(offset int) (length int, value int64) {
 	bitRep := ""
-	length := 0
+	length = 0
 
 	for i := offset; i < len(solver.bits); i += 5 {
 		bitRep += fmt.Sprintf("%d%d%d%d", solver.bits[i+1], solver.bits[i+2], solver.bits[i+3], solver.bits[i+4])
@@ -93,23 +104,91 @@ func (solver *Solver) parseLiteralPacket(offset int) (int, int) {
 		}
 	}
 
-	value, _ := strconv.ParseInt(bitRep, 2, 32)
-	return int(value), length
+	v, _ := strconv.ParseInt(bitRep, 2, 64)
+	return length, int64(v)
 }
 
-func (solver *Solver) parseOperatorPacket(offset int) int {
+func (solver *Solver) parseOperatorPacket(offset int, op operation) (length int, value int64) {
 	lengthTypeId := solver.bits[offset]
 
+	length = 0
+	var parsedValues []int64
+
 	if lengthTypeId == 0 {
+		parsedLength := 0
 		totalLength := bitSliceToValue(solver.bits[offset+1 : offset+16])
-		return totalLength + 16
+		for parsedLength < totalLength {
+			l, v := solver.parsePacket(offset + 16 + parsedLength)
+			parsedLength += l
+			parsedValues = append(parsedValues, v)
+		}
+
+		length = totalLength + 16
 	} else {
 		numberOfSubPackets := bitSliceToValue(solver.bits[offset+1 : offset+12])
-		totalLength := 0
+		totalLength := 12
 		for i := 0; i < numberOfSubPackets; i++ {
-			totalLength += solver.parsePacket(offset + 12 + totalLength)
+			l, v := solver.parsePacket(offset + totalLength)
+			totalLength += l
+			parsedValues = append(parsedValues, v)
 		}
-		return totalLength + 12
+		length = totalLength
+	}
+
+	return length, calculate(op, parsedValues...)
+}
+
+func calculate(op operation, values ...int64) int64 {
+	var result int64 = 0
+
+	switch op {
+	case sum:
+		for _, v := range values {
+			result += v
+		}
+		return result
+	case product:
+		result = 1
+		for _, v := range values {
+			result *= v
+		}
+		return result
+	case minimum:
+		result = math.MaxInt
+		for _, v := range values {
+			if v < result {
+				result = v
+			}
+		}
+		return result
+	case maximum:
+		result = math.MinInt
+		for _, v := range values {
+			if v > result {
+				result = v
+			}
+		}
+		return result
+	case greaterThan:
+		if values[0] > values[1] {
+			return 1
+		} else {
+			return 0
+		}
+	case lessThan:
+		if values[0] < values[1] {
+			return 1
+		} else {
+			return 0
+		}
+	case equalTo:
+		if values[0] == values[1] {
+			return 1
+		} else {
+			return 0
+		}
+	default:
+		panic(fmt.Sprintf("invalid operation '%d'", op))
 	}
 }
 
@@ -121,6 +200,6 @@ func bitSliceToValue(bits []int) int {
 	return value
 }
 
-func (solver *Solver) result() string {
-	return fmt.Sprintf("%d", solver.accumulatedVersions)
+func (solver *Solver) result(n int64) string {
+	return fmt.Sprintf("%d", n)
 }
