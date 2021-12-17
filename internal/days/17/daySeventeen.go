@@ -2,6 +2,7 @@ package seventeen
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -17,7 +18,7 @@ type Solver struct {
 }
 
 func (solver *Solver) SolveStarOne(input []string) string {
-	return solver.parseInput(input).findAllFireOptions().result(solver.highestReach)
+	return solver.parseInput(input).calculateHighestReach().result(solver.highestReach)
 }
 
 func (solver *Solver) SolveStarTwo(input []string) string {
@@ -41,16 +42,18 @@ func (solver *Solver) parseInput(input []string) *Solver {
 	return solver
 }
 
+func (solver *Solver) calculateHighestReach() *Solver {
+	solver.highestReach = solver.trench.y[0] * (solver.trench.y[0] + 1) / 2
+	return solver
+}
+
 func (solver *Solver) findAllFireOptions() *Solver {
-	for x := 0; x <= solver.trench.x[1]; x++ {
-		for y := solver.trench.y[0]; y < 500; y++ {
+	xMin := math.Sqrt(float64(2 * solver.trench.x[0]))
+
+	for x := int(xMin); x <= solver.trench.x[1]; x++ {
+		for y := solver.trench.y[0]; y < -1*solver.trench.y[0]; y++ {
 			if solver.hitsTrench(x, y) {
 				solver.options++
-
-				maxReach := maxHigh(y)
-				if maxReach > solver.highestReach {
-					solver.highestReach = maxReach
-				}
 			}
 		}
 	}
@@ -83,15 +86,6 @@ func (solver *Solver) hitsTrench(vx, vy int) bool {
 	}
 
 	return true
-}
-
-func maxHigh(vy int) int {
-	sum := 0
-	for i := 1; i <= vy; i++ {
-		sum += i
-	}
-
-	return sum
 }
 
 func (solver *Solver) result(value int) string {
