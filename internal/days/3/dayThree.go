@@ -1,4 +1,4 @@
-package days
+package three
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-type DayThree struct {
+type Solver struct {
 	values    []int
 	bitCounts []int
 }
@@ -18,40 +18,40 @@ const (
 	uncommon          = "uncommon"
 )
 
-func (day *DayThree) SolveStarOne(input []string) string {
-	return day.parseInput(input).getPowerConsumptionRating()
+func (solver *Solver) SolveStarOne(input []string) string {
+	return solver.parseInput(input).getPowerConsumptionRating()
 }
 
-func (day *DayThree) SolveStarTwo(input []string) string {
-	return day.parseInput(input).getLifeSupportRating()
+func (solver *Solver) SolveStarTwo(input []string) string {
+	return solver.parseInput(input).getLifeSupportRating()
 }
 
-func (day *DayThree) parseInput(input []string) *DayThree {
+func (solver *Solver) parseInput(input []string) *Solver {
 	if len(input) == 0 {
 		panic("empty input")
 	}
 
-	day.values = make([]int, len(input))
-	day.bitCounts = make([]int, len(strings.TrimSpace(input[0])))
+	solver.values = make([]int, len(input))
+	solver.bitCounts = make([]int, len(strings.TrimSpace(input[0])))
 
 	for idx, str := range input {
 		value, err := strconv.ParseInt(str, 2, 16)
 		if err != nil {
 			panic(fmt.Sprintf("invalid input %s", str))
 		}
-		day.values[idx] = int(value)
-		increaseBits(&day.bitCounts, day.values[idx])
+		solver.values[idx] = int(value)
+		increaseBits(&solver.bitCounts, solver.values[idx])
 	}
 
-	return day
+	return solver
 }
 
-func (day *DayThree) getPowerConsumptionRating() string {
+func (solver *Solver) getPowerConsumptionRating() string {
 	var gamma = 0
 	var epsilon = 0
-	var threshold = len(day.values) / 2
+	var threshold = len(solver.values) / 2
 
-	for idx, v := range day.bitCounts {
+	for idx, v := range solver.bitCounts {
 		if v > threshold {
 			gamma |= pow2(idx)
 		} else {
@@ -62,19 +62,19 @@ func (day *DayThree) getPowerConsumptionRating() string {
 	return fmt.Sprintf("%d", gamma*epsilon)
 }
 
-func (day *DayThree) getLifeSupportRating() string {
-	oxygenValues := make([]int, len(day.values))
-	copy(oxygenValues, day.values)
-	high := pow2(len(day.bitCounts) - 1)
+func (solver *Solver) getLifeSupportRating() string {
+	oxygenValues := make([]int, len(solver.values))
+	copy(oxygenValues, solver.values)
+	high := pow2(len(solver.bitCounts) - 1)
 
 	for len(oxygenValues) > 1 && high >= 1 {
 		oxygenValues = filterByMaskBit(oxygenValues, high, common)
 		high = high / 2
 	}
 
-	carbonValues := make([]int, len(day.values))
-	copy(carbonValues, day.values)
-	high = pow2(len(day.bitCounts) - 1)
+	carbonValues := make([]int, len(solver.values))
+	copy(carbonValues, solver.values)
+	high = pow2(len(solver.bitCounts) - 1)
 
 	for len(carbonValues) > 1 && high >= 1 {
 		carbonValues = filterByMaskBit(carbonValues, high, uncommon)
