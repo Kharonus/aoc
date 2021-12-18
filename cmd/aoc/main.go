@@ -3,7 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+
+	"github.com/Kharonus/aoc/internal"
+	"github.com/Kharonus/aoc/internal/days"
 	"github.com/Kharonus/aoc/internal/days/1"
+	"github.com/Kharonus/aoc/internal/days/10"
 	"github.com/Kharonus/aoc/internal/days/11"
 	"github.com/Kharonus/aoc/internal/days/12"
 	"github.com/Kharonus/aoc/internal/days/13"
@@ -12,6 +17,7 @@ import (
 	"github.com/Kharonus/aoc/internal/days/16"
 	"github.com/Kharonus/aoc/internal/days/17"
 	"github.com/Kharonus/aoc/internal/days/18"
+	"github.com/Kharonus/aoc/internal/days/19"
 	"github.com/Kharonus/aoc/internal/days/2"
 	"github.com/Kharonus/aoc/internal/days/3"
 	"github.com/Kharonus/aoc/internal/days/4"
@@ -20,10 +26,6 @@ import (
 	"github.com/Kharonus/aoc/internal/days/7"
 	"github.com/Kharonus/aoc/internal/days/8"
 	"github.com/Kharonus/aoc/internal/days/9"
-	"log"
-
-	"github.com/Kharonus/aoc/internal"
-	"github.com/Kharonus/aoc/internal/days"
 )
 
 func main() {
@@ -86,7 +88,7 @@ func findSolver(day int) internal.IDaySolver {
 	case 9:
 		daySolver = &nine.Solver{}
 	case 10:
-		daySolver = &days.DayTen{}
+		daySolver = &ten.Solver{}
 	case 11:
 		daySolver = &eleven.Solver{}
 	case 12:
@@ -104,7 +106,7 @@ func findSolver(day int) internal.IDaySolver {
 	case 18:
 		daySolver = &eighteen.Solver{}
 	case 19:
-		daySolver = &days.DayNineteen{}
+		daySolver = &nineteen.Solver{}
 	case 20:
 		daySolver = &days.DayTwenty{}
 	case 21:

@@ -1,11 +1,11 @@
-package days
+package nineteen
 
-type DayNineteen struct{}
+type Solver struct{}
 
-func (day *DayNineteen) SolveStarOne(input []string) string {
+func (solver *Solver) SolveStarOne(input []string) string {
 	return "What, are you impatient? We do not even approached this far in December 2021 ..."
 }
 
-func (day *DayNineteen) SolveStarTwo(input []string) string {
+func (solver *Solver) SolveStarTwo(input []string) string {
 	return "What, are you impatient? We do not even approached this far in December 2021 ..."
 }

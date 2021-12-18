@@ -234,17 +234,6 @@ func parsePair(str string, depth int) *pair {
 	}
 }
 
-func printPair(p *pair) string {
-	if p.left != nil && p.right != nil {
-		left := printPair(p.left)
-		right := printPair(p.right)
-
-		return fmt.Sprintf("[%s,%s]", left, right)
-	} else {
-		return fmt.Sprintf("%d", p.number)
-	}
-}
-
 func (p *pair) isLiteral() bool {
 	return p.left == nil || p.right == nil
 }

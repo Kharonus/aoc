@@ -1,11 +1,11 @@
-package days
+package ten
 
 import (
 	"fmt"
 	"sort"
 )
 
-type DayTen struct {
+type Solver struct {
 	score            int
 	incompleteScores []int
 }
@@ -23,40 +23,40 @@ const (
 	closeDiamond     bodyRune = '>'
 )
 
-func (day *DayTen) SolveStarOne(input []string) string {
-	return day.checkLines(input).resultSyntaxScore()
+func (solver *Solver) SolveStarOne(input []string) string {
+	return solver.checkLines(input).resultSyntaxScore()
 }
 
-func (day *DayTen) SolveStarTwo(input []string) string {
-	return day.checkLines(input).resultIncompleteLineScore()
+func (solver *Solver) SolveStarTwo(input []string) string {
+	return solver.checkLines(input).resultIncompleteLineScore()
 }
 
-func (day *DayTen) checkLines(input []string) *DayTen {
-	day.incompleteScores = make([]int, 0, len(input))
+func (solver *Solver) checkLines(input []string) *Solver {
+	solver.incompleteScores = make([]int, 0, len(input))
 
 	for _, line := range input {
-		day.checkLine(line)
+		solver.checkLine(line)
 	}
 
-	return day
+	return solver
 }
 
-func (day *DayTen) checkLine(line string) {
+func (solver *Solver) checkLine(line string) {
 	var openRunes = make([]bodyRune, 0, len(line))
 
 	for _, character := range line {
 		r := bodyRune(character)
-		if day.isOpenRune(r) {
+		if solver.isOpenRune(r) {
 			openRunes = append(openRunes, r)
-		} else if day.isCloseRune(r) {
+		} else if solver.isCloseRune(r) {
 			stackSize := len(openRunes)
 			if stackSize == 0 {
 				panic(fmt.Sprintf("invalid line '%s'. too early closing character '%c'", line, r))
 			}
 
 			last := openRunes[stackSize-1]
-			if !day.validBody(last, r) {
-				day.score += day.syntaxScore(r)
+			if !solver.validBody(last, r) {
+				solver.score += solver.syntaxScore(r)
 				return
 			}
 
@@ -64,18 +64,18 @@ func (day *DayTen) checkLine(line string) {
 		}
 	}
 
-	day.incompleteScores = append(day.incompleteScores, day.incompleteLineScore(openRunes))
+	solver.incompleteScores = append(solver.incompleteScores, solver.incompleteLineScore(openRunes))
 }
 
-func (day *DayTen) isOpenRune(r bodyRune) bool {
+func (solver *Solver) isOpenRune(r bodyRune) bool {
 	return r == openBracket || r == openParenthesis || r == openCurly || r == openDiamond
 }
 
-func (day *DayTen) isCloseRune(r bodyRune) bool {
+func (solver *Solver) isCloseRune(r bodyRune) bool {
 	return r == closeBracket || r == closeParenthesis || r == closeCurly || r == closeDiamond
 }
 
-func (day *DayTen) validBody(open, close bodyRune) bool {
+func (solver *Solver) validBody(open, close bodyRune) bool {
 	switch {
 	case open == openParenthesis && close == closeParenthesis:
 		return true
@@ -90,7 +90,7 @@ func (day *DayTen) validBody(open, close bodyRune) bool {
 	}
 }
 
-func (day *DayTen) syntaxScore(r bodyRune) int {
+func (solver *Solver) syntaxScore(r bodyRune) int {
 	switch r {
 	case closeParenthesis:
 		return 3
@@ -105,7 +105,7 @@ func (day *DayTen) syntaxScore(r bodyRune) int {
 	}
 }
 
-func (day *DayTen) incompleteLineScore(openRunes []bodyRune) int {
+func (solver *Solver) incompleteLineScore(openRunes []bodyRune) int {
 	totalScore := 0
 	for i := len(openRunes) - 1; i >= 0; i-- {
 		totalScore *= 5
@@ -125,11 +125,11 @@ func (day *DayTen) incompleteLineScore(openRunes []bodyRune) int {
 	return totalScore
 }
 
-func (day *DayTen) resultSyntaxScore() string {
-	return fmt.Sprintf("%d", day.score)
+func (solver *Solver) resultSyntaxScore() string {
+	return fmt.Sprintf("%d", solver.score)
 }
 
-func (day *DayTen) resultIncompleteLineScore() string {
-	sort.Ints(day.incompleteScores)
-	return fmt.Sprintf("%d", day.incompleteScores[len(day.incompleteScores)/2])
+func (solver *Solver) resultIncompleteLineScore() string {
+	sort.Ints(solver.incompleteScores)
+	return fmt.Sprintf("%d", solver.incompleteScores[len(solver.incompleteScores)/2])
 }
