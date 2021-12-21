@@ -22,6 +22,7 @@ type overlap struct {
 }
 
 type scanner struct {
+	number         int
 	beacons        []*vector
 	transformation *transformation
 }
@@ -168,12 +169,14 @@ func (solver *Solver) convertBeaconsToBase() *Solver {
 	scannerWithTransformation = append(scannerWithTransformation, solver.scanners[0])
 
 	for len(overlaps) > 0 {
-		var o *overlap
-		for idx, laps := range overlaps {
-			// TODO: from and to can be exchanged !!!
-			if containsScanner(scannerWithTransformation, laps.from) &&
-				!containsScanner(scannerWithTransformation, laps.to) {
-				o = laps
+		var intersection *overlap
+		revertTransformation := false
+		for idx, o := range overlaps {
+			fromIsKnown := containsScanner(scannerWithTransformation, o.from)
+			toIsKnown := containsScanner(scannerWithTransformation, o.to)
+			if fromIsKnown && !toIsKnown || toIsKnown && !fromIsKnown {
+				revertTransformation = toIsKnown
+				intersection = o
 
 				if idx == len(overlaps)-1 {
 					overlaps = overlaps[:idx]
@@ -184,11 +187,27 @@ func (solver *Solver) convertBeaconsToBase() *Solver {
 			}
 		}
 
-		o.to.transformation = &transformation{
-			rotation:    multiply(o.from.transformation.rotation, o.transformation.rotation),
-			translation: o.from.transformation.translation.add(o.transformation.translation),
+		if revertTransformation {
+			// TODO: this does not work
+			//rotationToFromScanner := multiply(intersection.to.transformation.rotation, transpose(intersection.transformation.rotation))
+			//intersection.from.transformation = &transformation{
+			//	rotation:    rotationToFromScanner,
+			//	translation: intersection.to.transformation.translation.subtract(intersection.transformation.translation.rotate(rotationToFromScanner)),
+			//}
+			inverted := intersection.transformation.invert()
+			intersection.from.transformation = &transformation{
+				rotation:    multiply(intersection.to.transformation.rotation, inverted.rotation),
+				translation: intersection.to.transformation.translation.add(inverted.translation.rotate(intersection.to.transformation.rotation)),
+			}
+
+			scannerWithTransformation = append(scannerWithTransformation, intersection.from)
+		} else {
+			intersection.to.transformation = &transformation{
+				rotation:    multiply(intersection.from.transformation.rotation, intersection.transformation.rotation),
+				translation: intersection.from.transformation.translation.add(intersection.transformation.translation.rotate(intersection.from.transformation.rotation)),
+			}
+			scannerWithTransformation = append(scannerWithTransformation, intersection.to)
 		}
-		scannerWithTransformation = append(scannerWithTransformation, o.to)
 	}
 
 	return solver
@@ -205,6 +224,7 @@ func containsScanner(list []*scanner, scan *scanner) bool {
 
 func (solver *Solver) parseInput(input []string) *Solver {
 	var beacons []*vector
+	counter := 0
 	for _, line := range input {
 		if strings.Index(line, "---") == 0 {
 			beacons = []*vector{}
@@ -212,13 +232,14 @@ func (solver *Solver) parseInput(input []string) *Solver {
 		}
 
 		if line == "" {
-			solver.scanners = append(solver.scanners, &scanner{beacons: beacons})
+			solver.scanners = append(solver.scanners, &scanner{beacons: beacons, number: counter})
+			counter++
 			continue
 		}
 
 		beacons = append(beacons, parseLocation(line))
 	}
-	solver.scanners = append(solver.scanners, &scanner{beacons: beacons})
+	solver.scanners = append(solver.scanners, &scanner{beacons: beacons, number: counter})
 
 	return solver
 }
@@ -251,6 +272,18 @@ func (solver *Solver) findOverlap(from, to *scanner) *overlap {
 	//	from:           from,
 	//	to:             to,
 	//}
+}
+
+func (t *transformation) invert() *transformation {
+	newTranslation := t.translation.rotate(transpose(t.rotation))
+	return &transformation{
+		rotation: transpose(t.rotation),
+		translation: &vector{
+			x: newTranslation.x * -1,
+			y: newTranslation.y * -1,
+			z: newTranslation.z * -1,
+		},
+	}
 }
 
 func generateRotations() [][3][3]int {
@@ -314,38 +347,6 @@ func generateRotations() [][3][3]int {
 	}
 }
 
-func computeTransformation(v1, t1, v2, t2 *vector) *transformation {
-	for _, r := range possibleRotations {
-		translation1 := v1.subtract(v2.rotate(r))
-		translation2 := t1.subtract(t2.rotate(r))
-
-		if translation1.equals(translation2) {
-			return &transformation{
-				rotation:    r,
-				translation: translation1,
-			}
-		}
-	}
-
-	return nil
-}
-
-func printR(r [3][3]int) {
-	result := ""
-	for i := 0; i < 3; i++ {
-		for j := 0; j < 3; j++ {
-			if r[i][j] == -1 {
-				result += "-1,"
-			} else {
-				result += fmt.Sprintf(" %d,", r[i][j])
-			}
-		}
-		result += "\n"
-	}
-
-	fmt.Println(result)
-}
-
 func (v *vector) subtract(vec *vector) *vector {
 	return &vector{
 		x: v.x - vec.x,
@@ -372,12 +373,6 @@ func (v *vector) scalar(s float64) *vector {
 		y: int(float64(v.y) * s),
 		z: int(float64(v.z) * s),
 	}
-}
-
-func (v *vector) transform(t *transformation) *vector {
-	translated := v.subtract(t.translation)
-
-	return translated.rotate(t.rotation)
 }
 
 func (v *vector) rotate(rotation [3][3]int) *vector {
