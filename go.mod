@@ -1,3 +1,3 @@
 module github.com/Kharonus/aoc
 
-go 1.17
+go 1.19

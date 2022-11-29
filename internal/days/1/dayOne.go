@@ -3,14 +3,12 @@ package one
 import (
 	"fmt"
 	"strconv"
-
-	"github.com/Kharonus/aoc/internal"
 )
 
 type Solver struct{}
 
 func (solver *Solver) SolveStarOne(input []string) string {
-	values, err := internal.StringSliceToIntSlice(input)
+	values, err := stringSliceToIntSlice(input)
 	if err != nil {
 		panic(fmt.Sprintf("input is no list of integer values"))
 	}
@@ -20,7 +18,7 @@ func (solver *Solver) SolveStarOne(input []string) string {
 }
 
 func (solver *Solver) SolveStarTwo(input []string) string {
-	values, err := internal.StringSliceToIntSlice(input)
+	values, err := stringSliceToIntSlice(input)
 	if err != nil {
 		panic(fmt.Sprintf("input is no list of integer values"))
 	}
@@ -29,6 +27,19 @@ func (solver *Solver) SolveStarTwo(input []string) string {
 	return strconv.Itoa(aggregateIncreasedValues(values))
 }
 
+func stringSliceToIntSlice(input []string) ([]int, error) {
+	var result = make([]int, len(input))
+	for idx, s := range input {
+		value, err := strconv.Atoi(s)
+		if err != nil {
+			return nil, err
+		}
+
+		result[idx] = value
+	}
+
+	return result, nil
+}
 
 func aggregateIncreasedValues(input []int) int {
 	increasedCounter := 0
