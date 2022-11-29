@@ -15,9 +15,10 @@ func main() {
 		}
 	}()
 
-	var day, star int
+	var year, day, star int
 	var inputFile string
 
+	flag.IntVar(&year, "y", 0, "Specify the year of the advent of code challenge. Must be between 2021 and 2022.")
 	flag.IntVar(&day, "d", 0, "Specify the day of the advent of code challenge. Must be between 1 and 25.")
 	flag.IntVar(&star, "s", 0, "Specify the star of the advent of code challenge. Must be 1 or 2.")
 	flag.StringVar(&inputFile, "i", ".", "The input file of the advent of code challenge.")
@@ -33,7 +34,7 @@ func main() {
 
 	input := internal.ReadFileLineByLine(inputFile)
 
-	daySolver := internal.FindSolverForDay(day)
+	daySolver := internal.FindSolver(year, day)
 	var solution string
 	switch star {
 	case 1:
