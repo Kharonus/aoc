@@ -1,6 +1,9 @@
 package common
 
-import "strings"
+import (
+	"sort"
+	"strings"
+)
 
 func Reduce[T, M any](s []T, f func(M, T) M, initValue M) M {
 	acc := initValue
@@ -25,6 +28,12 @@ func Intersect[T comparable](a, b []T) []T {
 	}
 
 	return set
+}
+
+func Reverse[T comparable](s []T) {
+	sort.SliceStable(s, func(i, j int) bool {
+		return i > j
+	})
 }
 
 func IntersectStrings(a, b string) string {
