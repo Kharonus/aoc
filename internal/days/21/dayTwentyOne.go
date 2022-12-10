@@ -46,7 +46,7 @@ func (solver *Solver) rollUntilWin() *Solver {
 }
 
 func (solver *Solver) rollQuantum() *Solver {
-	
+	return solver
 }
 
 func rollDieThrice(face int) (sum, newFace int) {

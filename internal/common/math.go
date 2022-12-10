@@ -18,3 +18,8 @@ func Abs(a int) (int, int) {
 
 	return a, 1
 }
+
+func Diff(a, b int) int {
+	abs, _ := Abs(a - b)
+	return abs
+}
