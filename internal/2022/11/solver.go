@@ -1,11 +1,181 @@
-package _1
+package _11
 
-type Solver struct{}
+import (
+	"fmt"
+	"regexp"
+	"sort"
+	"strconv"
+
+	"github.com/Kharonus/aoc/internal/common"
+)
+
+type operator int
+
+const (
+	add operator = iota
+	multiply
+)
+
+type monkey struct {
+	items       []int
+	operation   func(int) int
+	reducer     func(int) int
+	test        func(int) int
+	inspections int
+}
+
+type Solver struct {
+	monkeys []*monkey
+}
 
 func (day *Solver) SolveStarOne(input []string) string {
-	return "What, are you impatient? We didn't even reach this date yet."
+	business := day.parseInput(input, true).rounds(20).calculateBusiness()
+	return strconv.Itoa(business)
 }
 
 func (day *Solver) SolveStarTwo(input []string) string {
-	return "What, are you impatient? We didn't even reach this date yet."
+	business := day.parseInput(input, false).rounds(10000).calculateBusiness()
+	return strconv.Itoa(business)
+}
+
+func (day *Solver) parseInput(input []string, simple bool) *Solver {
+	start := regexp.MustCompile(`Monkey\s[0-9]+:`)
+
+	for idx, line := range input {
+		match := start.MatchString(line)
+		if !match {
+			continue
+		}
+
+		day.monkeys = append(day.monkeys, day.parseMonkey(input[idx+1:idx+6], simple))
+	}
+
+	return day
+}
+
+func (day *Solver) parseMonkey(lines []string, simple bool) *monkey {
+	return &monkey{
+		items:       parseItems(lines[0]),
+		operation:   parseOperatorFunction(lines[1]),
+		reducer:     parseReducer(lines[1:3], simple),
+		test:        parseTest(lines[2:5]),
+		inspections: 0,
+	}
+}
+
+func (day *Solver) rounds(count int) *Solver {
+	for i := 0; i < count; i++ {
+		for _, m := range day.monkeys {
+			day.turn(m)
+		}
+	}
+
+	return day
+}
+
+func (day *Solver) turn(monkey *monkey) {
+	for _, item := range monkey.items {
+		monkey.inspections += 1
+		newItem := monkey.reducer(monkey.operation(item))
+		target := monkey.test(newItem)
+
+		day.monkeys[target].items = append(day.monkeys[target].items, newItem)
+	}
+
+	monkey.items = []int{}
+}
+
+func (day *Solver) calculateBusiness() int {
+	bigBusiness := common.Reduce(day.monkeys, func(max []int, monkey *monkey) []int {
+		if monkey.inspections > max[0] {
+			max[0] = monkey.inspections
+			sort.Ints(max)
+		}
+
+		return max
+	}, []int{0, 0})
+
+	return common.Reduce(bigBusiness, common.Product, 1)
+}
+
+func parseItems(str string) []int {
+	itemsStr := regexp.MustCompile(`[0-9]+`).FindAllString(str, -1)
+	return common.Reduce(itemsStr, func(list []int, str string) []int {
+		if item, ok := common.ParseIntDecimal(str); !ok {
+			panic(fmt.Sprintf("Invalid list of items: '%s'", str))
+		} else {
+			return append(list, item)
+		}
+
+	}, []int{})
+}
+
+func parseOperatorFunction(line string) func(int) int {
+	op, number, isNumber := parseOperator(line)
+	switch {
+	case op == add && !isNumber:
+		return func(i int) int { return i + i }
+	case op == multiply && !isNumber:
+		return func(i int) int { return i * i }
+	case op == add:
+		return func(i int) int { return i + number }
+	case op == multiply:
+		return func(i int) int { return i * number }
+	}
+
+	return func(i int) int { return i }
+}
+
+func parseOperator(line string) (op operator, number int, isNumber bool) {
+	opRegex := regexp.MustCompile(`[+*]`)
+	switch opRegex.FindString(line) {
+	case "+":
+		op = add
+	case "*":
+		op = multiply
+	default:
+		panic(fmt.Sprintf("Invalid operation: '%s'", line))
+	}
+
+	opIdx := opRegex.FindStringIndex(line)
+	number, isNumber = common.ParseIntDecimal(line[opIdx[0]+2:])
+
+	return op, number, isNumber
+}
+
+func parseTest(lines []string) func(int) int {
+	divisor := parseSingleNumber(lines[0])
+	monkeyTargetTrue := parseSingleNumber(lines[1])
+	monkeyTargetFalse := parseSingleNumber(lines[2])
+
+	return func(i int) int {
+		if i%divisor == 0 {
+			return monkeyTargetTrue
+		} else {
+			return monkeyTargetFalse
+		}
+	}
+}
+
+func parseSingleNumber(line string) int {
+	number, _ := common.ParseIntDecimal(regexp.MustCompile(`[0-9]+`).FindString(line))
+	return number
+}
+
+func parseReducer(lines []string, simple bool) func(int) int {
+	if simple {
+		return func(i int) int { return i / 3 }
+	}
+
+	op, number, isNumber := parseOperator(lines[0])
+	divisor := parseSingleNumber(lines[1])
+
+	switch {
+	case op == add:
+		return func(i int) int { return i % divisor }
+	case op == multiply:
+		return func(i int) int { return i % (number * divisor) }
+	}
+
+	return func(i int) int { return i }
 }
