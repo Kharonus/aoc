@@ -2,9 +2,10 @@ package _9
 
 import (
 	"fmt"
-	"github.com/Kharonus/aoc/internal/common"
 	"strconv"
 	"strings"
+
+	"github.com/Kharonus/aoc/internal/common"
 )
 
 type direction int

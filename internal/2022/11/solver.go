@@ -21,11 +21,13 @@ type monkey struct {
 	operation   func(int) int
 	reducer     func(int) int
 	test        func(int) int
+	divisor     int
 	inspections int
 }
 
 type Solver struct {
 	monkeys []*monkey
+	modulo  int
 }
 
 func (day *Solver) SolveStarOne(input []string) string {
@@ -41,24 +43,31 @@ func (day *Solver) SolveStarTwo(input []string) string {
 func (day *Solver) parseInput(input []string, simple bool) *Solver {
 	start := regexp.MustCompile(`Monkey\s[0-9]+:`)
 
+	day.modulo = 1
 	for idx, line := range input {
 		match := start.MatchString(line)
 		if !match {
 			continue
 		}
 
-		day.monkeys = append(day.monkeys, day.parseMonkey(input[idx+1:idx+6], simple))
+		day.monkeys = append(day.monkeys, day.parseMonkey(input[idx+1:idx+6]))
 	}
 
+	for _, m := range day.monkeys {
+		m.reducer = day.parseReducer(simple)
+	}
 	return day
 }
 
-func (day *Solver) parseMonkey(lines []string, simple bool) *monkey {
+func (day *Solver) parseMonkey(lines []string) *monkey {
+	test, divisor := parseTest(lines[2:5])
+	day.modulo *= divisor
+
 	return &monkey{
 		items:       parseItems(lines[0]),
 		operation:   parseOperatorFunction(lines[1]),
-		reducer:     parseReducer(lines[1:3], simple),
-		test:        parseTest(lines[2:5]),
+		test:        test,
+		divisor:     parseSingleNumber(lines[2]),
 		inspections: 0,
 	}
 }
@@ -143,8 +152,8 @@ func parseOperator(line string) (op operator, number int, isNumber bool) {
 	return op, number, isNumber
 }
 
-func parseTest(lines []string) func(int) int {
-	divisor := parseSingleNumber(lines[0])
+func parseTest(lines []string) (test func(int) int, divisor int) {
+	divisor = parseSingleNumber(lines[0])
 	monkeyTargetTrue := parseSingleNumber(lines[1])
 	monkeyTargetFalse := parseSingleNumber(lines[2])
 
@@ -154,7 +163,7 @@ func parseTest(lines []string) func(int) int {
 		} else {
 			return monkeyTargetFalse
 		}
-	}
+	}, divisor
 }
 
 func parseSingleNumber(line string) int {
@@ -162,20 +171,10 @@ func parseSingleNumber(line string) int {
 	return number
 }
 
-func parseReducer(lines []string, simple bool) func(int) int {
+func (day *Solver) parseReducer(simple bool) func(int) int {
 	if simple {
 		return func(i int) int { return i / 3 }
+	} else {
+		return func(i int) int { return i % day.modulo }
 	}
-
-	op, number, isNumber := parseOperator(lines[0])
-	divisor := parseSingleNumber(lines[1])
-
-	switch {
-	case op == add:
-		return func(i int) int { return i % divisor }
-	case op == multiply:
-		return func(i int) int { return i % (number * divisor) }
-	}
-
-	return func(i int) int { return i }
 }

@@ -1,0 +1,139 @@
+
+Search
+
+
+
+
+https://www.youtube.com/watch?v=WzhW20hLp6M&list=TLPQMjEwOTIwMjLnanb0xmwDbw&index=2
+> Speculators I spoke with said if you really want to understand how markets work, you’ve got to understand how Berkshire Hathaway is correlated to Anne Hathaway’s film career.
+
+Whenever an Anne Hathaway films come out, Berkshire’s Hathaway stock gets a bump. And when bad things happen to Anne Hathaway, like when she got into a car accident, Berkshire Hathaway’s stock goes down.
+
+What they’re saying is they have algorithms that are reading headlines – think Reuters, Bloomberg stories – that are fed into the computer and can detect whether it’s a negative or positive story and trade accordingly.
+ouf
+https://reddit.com/r/interestingasfuck/comments/xrmtvw/hurricane_ian_what_15_fr_storm_surge_looks_like/
+https://stackoverflow.com/questions/29349684/how-can-i-specify-the-required-node-js-version-in-package-json
+https://www.youtube.com/watch?v=Ee6uq2p8eSs
+Update Abmahnanwalt
+
+Ich bin aber manchmal schusselig 🤦. Da zahle ich einige Rechnungen und zack habe ich aus Versehen 1,74€ an den Abmahnanwalt Kilian Lenard überwiesen.
+
+Das Dumme ist, er hat mich nie abgemahnt. Es war ein Schreiben vom Kunden, was bei mir auf dem Tisch lag. Doppelt blöd, dass ich nichts in den Verwendungszweck geschrieben habe. 
+
+Puuuhh, was soll ich tun? 
+
+Nun muss der gute Mann wegen meiner Unachtsamkeit tatsächlich die Überweisung manuell prüfen und seine Bank über den Vorfall informieren.
+
+Gemäß Paragraph 812 BGB ist er nämlich zur Herausgabe verpflichtet. Er ist sogar gemäß Urteil vom OLG Celle verpflichtet, seine Kontobewegungen regelmäßig zu prüfen, sonst macht er sich gegenüber der Bank ggf schadensersatzpflichtig. (Urteil vom 08.06.2005, 3 U 11/05).
+
+Richtig b... Read more
+"Herr Merz, ich habe jetzt hier keine Lust mehr, so ein Trainee-Programm für einen Oppositionsführer aufzulegen."
+Beste Line aus der neuen Anstalt :D
+Definitiv, richtig gut 😂😂😂
+> List<String> subjectArr = Arrays.asList("aa", "bb", "cc");
+> List<Long> numArr = Arrays.asList(2L, 6L, 4L);
+> List<Pair> pairs = Streams.zip(subjectArr.stream(), numArr.stream(), Pair::new)
+        .collect(Collectors.toList());
+public static <A, B> List<Pair<A, B>> zip(List<A> as, List<B> bs) {
+  Iterator<A> it1 = as.iterator();
+  Iterator<B> it2 = bs.iterator();
+  List<Map.Entry<A, B>> result = new ArrayList<>();
+  while (it1.hasNext() && it2.hasNext()) {
+    result.add(Map.entry(it1.next(), it2.next()));
+  }
+  return result;
+}
+https://www.reddit.com/r/therewasanattempt/comments/yfavjr/to_laugh_normally/
+Treff mich mit meinem girlfriend auf einen Kaffee
+ich hab gerade erfahren: Annalena Baerbock nutzt jetzt OP ^^
+Also, das auswärtige Amt hat eine Subscription abgeschlossen
+Lol
+Lol
+Lol
+Image attached to message
+Reddit gegen die fdp Ideologie
+Image attached to message
+Mehr als 30 LNG-Tanker warten vor Europas Küste auf höhere Gaspreise
+Wegen niedriger Gaspreise geben Händler mit ihren LNG-Schiffen derzeit kein Vollgas. Warum sie vor Europa warten und warum das für Asien schlecht ist.
+www.heise.de
+HAHAHA :D
+
+https://www.heise.de/news/Mehr-als-30-LNG-Tanker-warten-vor-Europas-Kueste-auf-hoehere-Gaspreise-7333783.html
+Das war soooooo klar 😂
+Bis sie kein Essen mehr haven
+Neues Warnsystem Cell Broadcast wird per SMS angekündigt
+Um Menschen im Katastrophenfall besser zu schützen, soll in Deutschland das Warnsystem Cell Broadcast eingeführt werden. Nun werden alle Handybesitzer auf den Start des neuen Service hingewiesen.
+www.tagesschau.de
+https://www.tagesschau.de/inland/warnsystem-cell-broadcast-103.html
+
+oh, oh, ooooooh.... man hat sich also doch noch aufgerafft und gemerkt, dass diese Technologie gut sein kann, wenn sie bereits in so vielen anderen Ländern eingesetzt wird? :D
+
+Yay, ehrliche Freude hier bei mir. Hoffentlich läuft das system auch, bin gespannt auf den 8.12.
+Naja, irgendwann gehen auch solchen Leuten mal die Ausreden aus 😂 dann muss halt die einzig sinnvolle Lösung umgesetzt werden, manooo
+https://youtu.be/tfNOJpgZmh4
+https://research.ibm.com/blog/cryptographic-bill-of-materials
+Image attached to message
+Making My Own Programming Language and Coding a Game in It
+I developed my own programming language, called Z-Sharp (Z#), using C++. Then I went through the process of coding an entire game in it.Source and BinariesGe...
+youtu.be
+https://youtu.be/JP9n5wHyemU
+Image attached to message
+Böhmermanns perfekte Weihnachten
+Böhmermanns perfekte Weihnachten: In einer halben Stunde das erleben, was Weihnachten so kompliziert, so unvergleichlich und so komisch macht.
+www.zdf.de
+https://www.zdf.de/show/boehmermanns-perfekte-weihnachten/boehmermanns-perfekte-weihnachten-vom-14-dezember-2018-100.html
+Monkey 0:
+  Starting items: 65, 58, 93, 57, 66
+  Operation: new = old * 7
+  Test: divisible by 19
+    If true: throw to monkey 6
+    If false: throw to monkey 4
+
+Monkey 1:
+  Starting items: 76, 97, 58, 72, 57, 92, 82
+  Operation: new = old + 4
+  Test: divisible by 3
+    If true: throw to monkey 7
+    If false: throw to monkey 5
+
+Monkey 2:
+  Starting items: 90, 89, 96
+  Operation: new = old * 5
+  Test: divisible by 13
+    If true: throw to monkey 5
+    If false: throw to monkey 1
+
+Monkey 3:
+  Starting items: 72, 63, 72, 99
+  Operation: new = old * old
+  Test: divisible by 17
+    If true: throw to monkey 0
+    If false: throw to monkey 4
+
+Monkey 4:
+  Starting items: 65
+  Operation: new = old + 1
+  Test: divisible by 2
+    If true: throw to monkey 6
+    If false: throw to monkey 2
+
+Monkey 5:
+  Starting items: 97, 71
+  Operation: new = old + 8
+  Test: divisible by 11
+    If true: throw to monkey 7
+    If false: throw to monkey 3
+
+Monkey 6:
+  Starting items: 83, 68, 88, 55, 87, 67
+  Operation: new = old + 2
+  Test: divisible by 5
+    If true: throw to monkey 2
+    If false: throw to monkey 1
+
+Monkey 7:
+  Starting items: 64, 81, 50, 96, 82, 53, 62, 92
+  Operation: new = old + 5
+  Test: divisible by 7
+    If true: throw to monkey 3
+    If false: throw to monkey 0
