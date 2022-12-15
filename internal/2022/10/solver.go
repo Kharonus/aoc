@@ -45,12 +45,12 @@ func (day *Solver) setRegister(cmd string) {
 		panic(message)
 	}
 
-	val, err := strconv.ParseInt(split[1], 10, 32)
-	if err != nil {
+	val, ok := common.ParseIntDecimal(split[1])
+	if !ok {
 		panic(message)
 	}
 
-	day.register += int(val)
+	day.register += val
 }
 
 func (day *Solver) propagateSignal() bool {
