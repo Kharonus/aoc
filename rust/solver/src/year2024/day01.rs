@@ -1,6 +1,6 @@
-use std::io::Error;
+use std::error::Error;
 
-pub fn solve_first_star(input: &str) -> Result<String, Error> {
+pub fn solve_first_star(input: &str) -> Result<String, Box<dyn Error>> {
     let (mut left, mut right) = parse_input(input);
 
     left.sort();
@@ -14,7 +14,7 @@ pub fn solve_first_star(input: &str) -> Result<String, Error> {
     Ok(format!("{}", distances))
 }
 
-pub fn solve_second_star(input: &str) -> Result<String, Error> {
+pub fn solve_second_star(input: &str) -> Result<String, Box<dyn Error>> {
     let (left, right) = parse_input(input);
 
     let similarity = left.iter().fold(0, |acc, &number| {
