@@ -1,4 +1,6 @@
-pub fn solve_first_star(input: &str) -> String {
+use std::io::Error;
+
+pub fn solve_first_star(input: &str) -> Result<String, Error> {
     let (mut left, mut right) = parse_input(input);
 
     left.sort();
@@ -9,10 +11,10 @@ pub fn solve_first_star(input: &str) -> String {
         .zip(right.iter())
         .fold(0, |acc, (l, r)| acc + (l - r).abs());
 
-    format!("{}", distances)
+    Ok(format!("{}", distances))
 }
 
-pub fn solve_second_star(input: &str) -> String {
+pub fn solve_second_star(input: &str) -> Result<String, Error> {
     let (left, right) = parse_input(input);
 
     let similarity = left.iter().fold(0, |acc, &number| {
@@ -20,7 +22,7 @@ pub fn solve_second_star(input: &str) -> String {
         acc + (number * x)
     });
 
-    format!("{}", similarity)
+    Ok(format!("{}", similarity))
 }
 
 fn parse_input(input: &str) -> (Vec<i32>, Vec<i32>) {
