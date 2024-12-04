@@ -64,7 +64,9 @@ mod day02 {
             }
         }
     }
-}mod day03 {
+}
+
+mod day03 {
     use super::common;
     use solver::year2024::day03;
 
@@ -89,6 +91,39 @@ mod day02 {
             Ok(result) => {
                 println!("Result day 03 star 2: {}", result);
                 assert_eq!(result, "113965544");
+            }
+            Err(error) => {
+                panic!("Expected success but got an error: {:?}", error);
+            }
+        }
+    }
+}
+
+mod day04 {
+    use super::common;
+    use solver::year2024::day04;
+
+    #[test]
+    fn first_star() {
+        match common::setup("input/2024/d04.txt").and_then(|input| day04::solve_first_star(&input))
+        {
+            Ok(result) => {
+                println!("Result day 04 star 1: {}", result);
+                assert_eq!(result, "2401");
+            }
+            Err(error) => {
+                panic!("Expected success but got an error: {:?}", error);
+            }
+        }
+    }
+
+    #[test]
+    fn second_star() {
+        match common::setup("input/2024/d04.txt").and_then(|input| day04::solve_second_star(&input))
+        {
+            Ok(result) => {
+                println!("Result day 04 star 2: {}", result);
+                assert_eq!(result, "1822");
             }
             Err(error) => {
                 panic!("Expected success but got an error: {:?}", error);
