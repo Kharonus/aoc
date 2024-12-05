@@ -131,3 +131,36 @@ mod day04 {
         }
     }
 }
+
+mod day05 {
+    use super::common;
+    use solver::year2024::day05;
+
+    #[test]
+    fn first_star() {
+        match common::setup("input/2024/d05.txt").and_then(|input| day05::solve_first_star(&input))
+        {
+            Ok(result) => {
+                println!("Result day 05 star 1: {}", result);
+                assert_eq!(result, "5955");
+            }
+            Err(error) => {
+                panic!("Expected success but got an error: {:?}", error);
+            }
+        }
+    }
+
+    #[test]
+    fn second_star() {
+        match common::setup("input/2024/d05.txt").and_then(|input| day05::solve_second_star(&input))
+        {
+            Ok(result) => {
+                println!("Result day 05 star 2: {}", result);
+                assert_eq!(result, "4030");
+            }
+            Err(error) => {
+                panic!("Expected success but got an error: {:?}", error);
+            }
+        }
+    }
+}
